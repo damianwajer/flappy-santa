@@ -207,7 +207,7 @@ var game = (function() {
     gameState.container.appendChild(controlsArea);
     gameState.dom.controlsArea = controlsArea;
     var btnTogglePause = document.createElement('button');
-    btnTogglePause.innerText = 'Pauza (Spacja)';
+    btnTogglePause.innerText = 'Pauza (P)';
     btnTogglePause.addEventListener('click', togglePause);
     btnTogglePause.setAttribute('type', 'button');
     controlsArea.appendChild(btnTogglePause);
@@ -442,8 +442,9 @@ var game = (function() {
     document.onkeypress = function (e) {
       e = e || window.event;
 
-      if (e.charCode === 32) { // space key
+      if (e.charCode === 112) { // P key
         togglePause();
+        e.preventDefault();
       }
     };
   }
@@ -475,7 +476,7 @@ var game = (function() {
       return;
     }
     gameState.pause = false;
-    gameState.dom.btnTogglePause.innerText = 'Pauza (Spacja)';
+    gameState.dom.btnTogglePause.innerText = 'Pauza (P)';
     document.getElementsByClassName('bg-landscape')[0].classList.remove('paused') ;
   }
   var pause = function() {
@@ -483,7 +484,7 @@ var game = (function() {
       return;
     }
     gameState.pause = true;
-    gameState.dom.btnTogglePause.innerText = 'Graj (Spacja)';
+    gameState.dom.btnTogglePause.innerText = 'Graj (P)';
     document.getElementsByClassName('bg-landscape')[0].classList.add('paused');
   }
 
