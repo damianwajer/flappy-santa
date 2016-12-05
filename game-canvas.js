@@ -348,11 +348,8 @@ var game = (function() {
       stop();
     }
 
-    ctx.beginPath()
     ctx.clearRect(0,0, gameState.viewport.width, gameState.viewport.height);
-
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
+    ctx.beginPath()
     ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
     gameState.snow.angle += 0.01;
     for(var i = 0; i < gameState.snow.particles.length; i++) {
@@ -373,6 +370,7 @@ var game = (function() {
       ctx.moveTo(p.x, p.y);
       ctx.arc(p.x, p.y, p.r, 0, Math.PI*2, true);
     }
+    ctx.closePath();
     ctx.fill();
 
     ctx.drawImage(
@@ -396,6 +394,9 @@ var game = (function() {
         enemy.size.width, enemy.size.height
       );
     })
+    enemies = enemies.filter( function(enemy) {
+      return enemy.position.x > enemy.size.width * (-1)
+    });
   }
 
   var loadAssets = function() {
