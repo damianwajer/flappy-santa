@@ -38,6 +38,7 @@ var game = (function() {
 
     gameState = {
       pause: false,
+      stop: false,
       score: 0,
       container: container,
       ctx: ctx,
@@ -467,11 +468,12 @@ var game = (function() {
     gameState.time.cloudCounter = 0;
     gameState.time.treeCounter = 0;
     gameState.dom.outroScreen.style.display = 'none';
+    gameState.stop = false;
     gameState.pause = false;
     document.getElementsByClassName('bg-landscape')[0].classList.remove('paused');
   }
   var play = function() {
-    if (gameState.pause === false) {
+    if (gameState.pause === false || gameState.stop === true) {
       return;
     }
     gameState.pause = false;
@@ -490,7 +492,9 @@ var game = (function() {
   var stop = function() {
     gameState.dom.outroScreen.style.display = 'block';
     gameState.dom.score.innerText = parseInt(gameState.score);
-    pause();
+    gameState.stop = true;
+    gameState.pause = true;
+    document.getElementsByClassName('bg-landscape')[0].classList.add('paused');
   }
 
   return {
