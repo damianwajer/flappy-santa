@@ -50,6 +50,8 @@ var game = (function() {
       },
       dom: {
         outroScreen: null,
+        introScreen: null,
+        btnStart: null,
         controlsArea: null,
         btnTogglePause: null,
         score: null
@@ -136,86 +138,17 @@ var game = (function() {
     }
   }
   var init = function() {
+    initCss();
     initUI();
-    initCssBackground();
+    initBackground();
     initSnow();
     gameState.player = createPlayer();
     start();
+    pause();
     window.requestAnimationFrame(update);
   }
 
-  var initUI = function() {
-    var outroScreen = document.createElement('div');
-    outroScreen.style.position = 'absolute';
-    outroScreen.style.zIndex = '3';
-    outroScreen.style.top = '0';
-    outroScreen.style.left = '0';
-    outroScreen.style.bottom = '0';
-    outroScreen.style.right = '0';
-    outroScreen.style.marginTop = 'auto';
-    outroScreen.style.marginLeft = 'auto';
-    outroScreen.style.marginBottom = 'auto';
-    outroScreen.style.marginRight = 'auto';
-    outroScreen.style.border = '6px solid #eb5d50';
-    outroScreen.style.boxShadow ='0px 0px 0px 4px #ffffff';
-    outroScreen.style.width = '200px';
-    outroScreen.style.height = '100px';
-    outroScreen.style.background = '#ffffff';
-    outroScreen.style.textAlign = 'center';
-    gameState.container.appendChild(outroScreen);
-    gameState.dom.outroScreen = outroScreen;
-    var gratz = document.createElement('p');
-    gratz.innerText = 'GRATZ! Twój wynik to:';
-    gratz.style.fontFamily = 'Times New Roman';
-    gratz.style.fontSize = '10px';
-    gratz.style.lineHeight = '10px';
-    gratz.style.fontWeight = '900';
-    gratz.style.textAlign = 'center';
-    gratz.style.letterSpacing = '3px';
-    gratz.style.marginTop = '12px';
-    gratz.style.marginBottom = '8px';
-    outroScreen.appendChild(gratz);
-    var score = document.createElement('p');
-    score.innerText = '10';
-    score.style.fontFamily = 'Times New Roman';
-    score.style.fontSize = '22px';
-    score.style.lineHeight = '22px';
-    score.style.fontWeight = '900';
-    score.style.textAlign = 'center';
-    score.style.letterSpacing = '3px';
-    score.style.marginTop = '0';
-    score.style.marginBottom = '12px';
-    gameState.dom.score = score;
-    outroScreen.appendChild(score);
-    var btnRestart = document.createElement('button');
-    btnRestart.innerText = 'RESTART';
-    btnRestart.style.fontFamily = 'Times New Roman';
-    btnRestart.style.letterSpacing = '3px';
-    btnRestart.style.fontSize = '16px';
-    btnRestart.style.fontWeight = '900';
-    btnRestart.style.color = '#eb5d50';
-    btnRestart.style.background = 'transparent';
-    btnRestart.style.border = 'none';
-    btnRestart.style.cursor = 'pointer';
-    btnRestart.style.textShadow = '1px 1px 0px rgba(0, 0, 0, 0.5)';
-    btnRestart.addEventListener('click', start);
-    outroScreen.appendChild(btnRestart);
-    var controlsArea = document.createElement('div');
-    controlsArea.style.position = 'absolute';
-    controlsArea.style.zIndex = '3';
-    controlsArea.style.top = '15px';
-    controlsArea.style.right = '15px';
-    gameState.container.appendChild(controlsArea);
-    gameState.dom.controlsArea = controlsArea;
-    var btnTogglePause = document.createElement('button');
-    btnTogglePause.innerText = 'Pauza (P)';
-    btnTogglePause.addEventListener('click', togglePause);
-    btnTogglePause.setAttribute('type', 'button');
-    controlsArea.appendChild(btnTogglePause);
-    gameState.dom.btnTogglePause = btnTogglePause;
-  }
-
-  var initCssBackground = function() {
+  var initCss = function() {
     var style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = '';
@@ -295,7 +228,125 @@ var game = (function() {
     style.innerHTML += '  -webkit-animation-play-state: paused;';
     style.innerHTML += '  animation-play-state: paused;';
     style.innerHTML += '}';
+    style.innerHTML += '.game-ui-screen {';
+    style.innerHTML += '  position: absolute;';
+    style.innerHTML += '  z-index: 3;';
+    style.innerHTML += '  top: 0;';
+    style.innerHTML += '  left: 0;';
+    style.innerHTML += '  bottom: 0;';
+    style.innerHTML += '  right: 0;';
+    style.innerHTML += '  margin: auto;';
+    style.innerHTML += '  padding: 10px 10px 10px 10px;';
+    style.innerHTML += '  border: 6px solid #eb5d50;';
+    style.innerHTML += '  box-shadow: 0px 0px 0px 4px #ffffff;';
+    style.innerHTML += '  width: 200px;';
+    style.innerHTML += '  height: 100px;';
+    style.innerHTML += '  background: #ffffff;';
+    style.innerHTML += '  text-align: center;';
+    style.innerHTML += '}';
+    style.innerHTML += '.game-ui-text {';
+    style.innerHTML += '  font-family: Times New Roman;';
+    style.innerHTML += '  font-size: 10px;';
+    style.innerHTML += '  line-height: 16px;';
+    style.innerHTML += '  font-weight: 900;';
+    style.innerHTML += '  text-align: center;';
+    style.innerHTML += '  letter-spacing: 3px;';
+    style.innerHTML += '  margin-top: 12px;';
+    style.innerHTML += '  margin-bottom: 8px;';
+    style.innerHTML += '}';
+    style.innerHTML += '.game-ui-score {';
+    style.innerHTML += '  font-family: Times New Roman;';
+    style.innerHTML += '  font-size: 22px;';
+    style.innerHTML += '  line-height: 22px;';
+    style.innerHTML += '  font-weight: 900;';
+    style.innerHTML += '  text-align: center;';
+    style.innerHTML += '  letter-spacing: 3px;';
+    style.innerHTML += '  margin-top: 0;';
+    style.innerHTML += '  margin-bottom: 12px;';
+    style.innerHTML += '}';
+    style.innerHTML += '.game-ui-btn {';
+    style.innerHTML += '  font-family: Times New Roman;';
+    style.innerHTML += '  letterSpacing: 3px;';
+    style.innerHTML += '  font-size: 16px;';
+    style.innerHTML += '  font-weight: 900;';
+    style.innerHTML += '  color: #eb5d50;';
+    style.innerHTML += '  background: transparent;';
+    style.innerHTML += '  border: none;';
+    style.innerHTML += '  cursor: pointer;';
+    style.innerHTML += '  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);';
+    style.innerHTML += '}';
+    style.innerHTML += '.controls {';
+    style.innerHTML += '  position: absolute;';
+    style.innerHTML += '  z-index: 3;';
+    style.innerHTML += '  top: 15px;';
+    style.innerHTML += '  right: 15px;';
+    style.innerHTML += '}';
+    style.innerHTML += '.controls-btn-pause {';
+    style.innerHTML += '  font-family: Times New Roman;';
+    style.innerHTML += '  letterSpacing: 3px;';
+    style.innerHTML += '  font-size: 12px;';
+    style.innerHTML += '  font-weight: 900;';
+    style.innerHTML += '  margin: 0;';
+    style.innerHTML += '  padding: 5px 10px 5px 10px;';
+    style.innerHTML += '  color: #eb5d50;';
+    style.innerHTML += '  background: #ffffff;';
+    style.innerHTML += '  border: none;';
+    style.innerHTML += '  cursor: pointer;';
+    style.innerHTML += '  border: 3px solid #eb5d50;';
+    style.innerHTML += '  box-shadow: 0px 0px 0px 2px #ffffff;';
+    style.innerHTML += '}';
+    style.innerHTML += '';
     document.getElementsByTagName('head')[0].appendChild(style);
+  }
+
+  var initUI = function() {
+    var introScreen = document.createElement('div');
+    introScreen.classList.add('game-ui-screen');
+    gameState.container.appendChild(introScreen);
+    gameState.dom.introScreen = introScreen;
+    var hello = document.createElement('p');
+    hello.classList.add('game-ui-text');
+    hello.innerText = 'Klikając lewym przyciskiem myszy, pomóż Mikołajowi omijać chmury i drzewa :)';
+    introScreen.appendChild(hello);
+    var btnStart = document.createElement('button');
+    btnStart.classList.add('game-ui-btn');
+    btnStart.innerText = 'START';
+    btnStart.addEventListener('click', play);
+    introScreen.appendChild(btnStart);
+    gameState.dom.btnStart = btnStart;
+
+    var outroScreen = document.createElement('div');
+    outroScreen.classList.add('game-ui-screen');
+    gameState.container.appendChild(outroScreen);
+    gameState.dom.outroScreen = outroScreen;
+    var gratz = document.createElement('p');
+    gratz.classList.add('game-ui-text');
+    gratz.innerText = 'GRATZ! Twój wynik to:';
+    outroScreen.appendChild(gratz);
+    var score = document.createElement('p');
+    score.classList.add('game-ui-score');
+    score.innerText = '0';
+    gameState.dom.score = score;
+    outroScreen.appendChild(score);
+    var btnRestart = document.createElement('button');
+    btnRestart.classList.add('game-ui-btn');
+    btnRestart.innerText = 'RESTART';
+    btnRestart.addEventListener('click', start);
+    outroScreen.appendChild(btnRestart);
+    var controlsArea = document.createElement('div');
+    controlsArea.classList.add('controls');
+    gameState.container.appendChild(controlsArea);
+    gameState.dom.controlsArea = controlsArea;
+    var btnTogglePause = document.createElement('button');
+    btnTogglePause.classList.add('controls-btn-pause');
+    btnTogglePause.innerText = 'Pauza (P)';
+    btnTogglePause.addEventListener('click', togglePause);
+    btnTogglePause.setAttribute('type', 'button');
+    controlsArea.appendChild(btnTogglePause);
+    gameState.dom.btnTogglePause = btnTogglePause;
+  }
+
+  var initBackground = function() {
     var bgStars = document.createElement('div');
     bgStars.classList.add('bg-stars');
     gameState.container.appendChild(bgStars);
@@ -477,6 +528,8 @@ var game = (function() {
     if (gameState.pause === false || gameState.stop === true) {
       return;
     }
+    gameState.dom.introScreen.style.display = 'none';
+    gameState.dom.btnStart.innerText = 'KONTYNUUJ';
     gameState.pause = false;
     gameState.dom.btnTogglePause.innerText = 'Pauza (P)';
     document.getElementsByClassName('bg-landscape')[0].classList.remove('paused') ;
@@ -485,6 +538,7 @@ var game = (function() {
     if (gameState.pause === true) {
       return;
     }
+    gameState.dom.introScreen.style.display = 'block';
     gameState.pause = true;
     gameState.dom.btnTogglePause.innerText = 'Graj (P)';
     document.getElementsByClassName('bg-landscape')[0].classList.add('paused');
