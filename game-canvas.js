@@ -89,8 +89,8 @@ var game = (function() {
   var enemies = [];
   var createTree = function() {
     var treeTexture = gameState.getAsset('./assets/tree.svg');
-    var random = getRandomInt(0, 5) + 1; // 1 - 5
-    var height = gameState.viewport.height * (0.3 + random * 0.05);
+    var random = getRandomInt(1, 4);
+    var height = gameState.viewport.height * (0.3 + random * 0.05)
     var width = height * treeTexture.aspectRatio;
     return {
       texture: treeTexture,
@@ -113,11 +113,11 @@ var game = (function() {
   }
   var createCloud = function() {
     var treeTexture = gameState.getAsset('./assets/cloud.svg');
-    var random = getRandomInt(0, 5) + 1; // 1 - 5
-    var height = gameState.viewport.height * (0.05 + random * 0.02);
+    var random = getRandomInt(5, 14);
+    var height = gameState.viewport.height * random / 100;
     var width = height * treeTexture.aspectRatio;
-    random = getRandomInt(0, 5);
-    var posY = gameState.viewport.height * random * 0.05;
+    random = getRandomInt(1, 4);
+    var posY = gameState.viewport.height * random / 10 - height;
     return {
       texture: treeTexture,
       type: 'cloud',
@@ -385,11 +385,11 @@ var game = (function() {
     gameState.time.treeCounter += deltaTime;
     gameState.time.cloudCounter += deltaTime;
     if (gameState.time.cloudCounter >= 1) {
-      gameState.time.cloudCounter = 0;
-      enemies.push(createCloud());
     }
-    if (gameState.time.treeCounter >= 2) {
+    if (gameState.time.treeCounter >= 1.5) {
+      gameState.time.cloudCounter = 0;
       gameState.time.treeCounter = 0;
+      enemies.push(createCloud());
       enemies.push(createTree());
     }
     gameState.time.prevTime = time;
@@ -436,9 +436,9 @@ var game = (function() {
         stop();
       }
       if (enemy.type == 'tree') {
-        enemy.position.x = enemy.position.x - deltaTime * 100;
+        enemy.position.x = enemy.position.x - deltaTime * 150;
       } else {
-        enemy.position.x = enemy.position.x - deltaTime * 130;
+        enemy.position.x = enemy.position.x - deltaTime * 175;
       }
       ctx.drawImage(
         enemy.texture.img,
