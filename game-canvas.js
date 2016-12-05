@@ -327,19 +327,17 @@ var game = (function() {
     gameState.time.prevTime = time;
     gameState.velocity += gameState.gravity;
     gameState.player.position.y = gameState.player.position.y + gameState.velocity;
-    
-    ctx.beginPath()
-    ctx.clearRect(0,0, gameState.viewport.width, gameState.viewport.height);
 
     if (gameState.player.position.y + gameState.player.size.height >= gameState.viewport.height || gameState.player.position.y < -10) {
       stop();
     }
     
+    ctx.beginPath()
+    ctx.clearRect(0,0, gameState.viewport.width, gameState.viewport.height);
+    
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-    ctx.beginPath();
-
     gameState.snow.angle += 0.01;
     for(var i = 0; i < gameState.snow.particles.length; i++) {
       var p = gameState.snow.particles[i];
