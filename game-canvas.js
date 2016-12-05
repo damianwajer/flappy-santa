@@ -49,6 +49,8 @@ var game = (function() {
       },
       dom: {
         outroScreen: null,
+        controlsArea: null,
+        btnTogglePause: null,
         score: null
       },
       time: {
@@ -58,8 +60,9 @@ var game = (function() {
       }
     }
     loadAssets();
+    initKeyPress();
   }
-  
+
   var createPlayer = function() {
     var playerTexture = gameState.getAsset('./assets/santa.svg');
     return {
@@ -196,6 +199,19 @@ var game = (function() {
     btnRestart.style.textShadow = '1px 1px 0px rgba(0, 0, 0, 0.5)';
     btnRestart.addEventListener('click', start);
     outroScreen.appendChild(btnRestart);
+    var controlsArea = document.createElement('div');
+    controlsArea.style.position = 'absolute';
+    controlsArea.style.zIndex = '3';
+    controlsArea.style.top = '15px';
+    controlsArea.style.right = '15px';
+    gameState.container.appendChild(controlsArea);
+    gameState.dom.controlsArea = controlsArea;
+    var btnTogglePause = document.createElement('button');
+    btnTogglePause.innerText = 'Pauza (Spacja)';
+    btnTogglePause.addEventListener('click', togglePause);
+    btnTogglePause.setAttribute('type', 'button');
+    controlsArea.appendChild(btnTogglePause);
+    gameState.dom.btnTogglePause = btnTogglePause;
   }
 
   var initCssBackground = function() {
@@ -304,7 +320,7 @@ var game = (function() {
       })
     }
   }
-  
+
   var update = function(time) {
     window.requestAnimationFrame(update);
     if (gameState.pause) {
@@ -331,10 +347,10 @@ var game = (function() {
     if (gameState.player.position.y + gameState.player.size.height >= gameState.viewport.height || gameState.player.position.y < -10) {
       stop();
     }
-    
+
     ctx.beginPath()
     ctx.clearRect(0,0, gameState.viewport.width, gameState.viewport.height);
-    
+
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
@@ -364,7 +380,7 @@ var game = (function() {
       gameState.player.position.x, gameState.player.position.y,
       gameState.player.size.width, gameState.player.size.height
     );
-    
+
     enemies.map( function(enemy) {
       if (isCollision(gameState.player, enemy)) {
         stop();
@@ -412,7 +428,7 @@ var game = (function() {
       }
     });
   }
-  
+
   var isCollision = function(elem1, elem2) {
     var testLeft = elem1.position.x <= elem2.position.x + elem2.size.width * elem2.collider.right + elem1.size.width * elem1.collider.left;
     var testRight = elem1.position.x >= elem2.position.x - elem1.size.width * elem1.collider.right + elem2.size.width * elem2.collider.left;
@@ -421,7 +437,25 @@ var game = (function() {
     return testTop && testLeft && testBottom && testRight;
   }
 
+  var initKeyPress = function () {
+    document.onkeypress = function (e) {
+      e = e || window.event;
+
+      if (e.charCode === 32) { // space key
+        togglePause();
+      }
+    };
+  }
+
   awake();
+
+  var togglePause = function () {
+    if (gameState.pause === true) {
+      play();
+    } else {
+      pause();
+    }
+  }
 
   var start = function() {
     enemies = []
@@ -439,14 +473,16 @@ var game = (function() {
     if (gameState.pause === false) {
       return;
     }
-    gameState.pause = true;
-    document.getElementsByClassName('bg-landscape')[0].classList.remove('paused');
+    gameState.pause = false;
+    gameState.dom.btnTogglePause.innerText = 'Pauza (Spacja)';
+    document.getElementsByClassName('bg-landscape')[0].classList.remove('paused') ;
   }
   var pause = function() {
     if (gameState.pause === true) {
       return;
     }
     gameState.pause = true;
+    gameState.dom.btnTogglePause.innerText = 'Graj (Spacja)';
     document.getElementsByClassName('bg-landscape')[0].classList.add('paused');
   }
 
@@ -455,6 +491,7 @@ var game = (function() {
     gameState.dom.score.innerText = parseInt(gameState.score);
     pause();
   }
+
   return {
     play: play,
     pause: pause
